@@ -10,3 +10,9 @@ class Troops:
     
     def getNumTroops(self, num):
         return self.num
+
+    def setTeam(self, team):
+        self.team = team
+    
+    def getTeam(self, team)
+        return self.team

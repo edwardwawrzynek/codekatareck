@@ -9,16 +9,12 @@ class Cell:
         self.x = x
         self.y = y
         self.cons = connections
-        #number of troops 
-        self.troops = [Troops(TEAM_YELLOW, 0), Troops(TEAM_BLUE,0), Troops(TEAM_RED,0), Troops(TEAM_GREEN,0)]
+        #number of troops (only one team can occupy a space at a time)
+        self.troops = Troops(0, 0)
     
     def connectCell(self, cell):
         self.cons.append(cell)
     
     def unconnectCell(self, cell):
-        try:
-            self.cons.remove(cell)
-            return True
-        except ValueError:
-            return False
+        self.cons = []
     
