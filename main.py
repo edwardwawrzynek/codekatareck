@@ -1,4 +1,4 @@
-#A cell on the board
-class Cell:
-    def __init__():
-        #TODO
+TEAM_YELLOW = 0
+TEAM_BLUE = 1
+TEAM_RED = 2
+TEAM_GREEN = 3
