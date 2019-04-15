@@ -11,6 +11,8 @@ class Api:
         self.teamPassword = teamPassword
         self.teamColor = teamColor
 
+        self.logIndex = 0
+
     def getTeamOrder(self):
         return requests.get(self.url + "/api/teams/order").json()
 
@@ -33,7 +35,7 @@ class Api:
         data = data.json()
         if data["owner"] == "null":
             return Troops(-1, data["amount"])
-        return Troops(TEAMS[data["owner"]], data["amount"])
+        return Troops(TEAMS.index(data["owner"]), int(data["amount"]))
 
     def getNumCards(self, team):
         params = {"teamColor": TEAMS[team]}
@@ -64,7 +66,7 @@ class Api:
 
     def connect(self, id1, id2):
         params = {"teamPassword": self.teamPassword, "tileId1": id1, "tileId2": id2}
-        req = requests.post(self.url + "/api/cards/connect", params = params)
+        req = requests.put(self.url + "/api/cards/connect", params = params)
         if req.text == "null" or req.text == "false":
             return False
 
@@ -78,16 +80,28 @@ class Api:
 
     def disconnect(self, id):
         params = {"teamPassword": self.teamPassword, "tileId": id}
-        req = requests.post(self.url + "/api/cards/disconnect", params = params)
+        req = requests.put(self.url + "/api/cards/disconnect", params = params)
         if req.text == "null" or req.text == "false":
             return False
 
         return True
 
-    #wait for our turn
-    def waitForTurn(self):
+    #wait for our turn (and call updateFunc)
+    def waitForTurn(self, updateFunc=False):
         team = self.getCurTeam()
 
         while team != self.teamColor:
-            time.sleep(0.05)
+            time.sleep(0.2)
             team = self.getCurTeam()
+            if updateFunc != False:
+                updateFunc()
+
+    #check for changes in the log, and return an array of new elements
+    def getNewLog(self):
+        log = self.getActionLog()
+        if len(log) > self.logIndex:
+            res = log[self.logIndex:]
+            self.logIndex = len(log)
+            return res
+
+        return []

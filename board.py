@@ -30,6 +30,28 @@ class Board:
     def getCellById(self, id):
         return self.board[int(id % self.w)][int(id / self.w)]
 
-    #update the given cells (used to get info from log)
-    def updateCell(self, id, api):
-        return 1
+    #update the given cells, including connection info (used to get info from log)
+    def updateCellCons(self, id, api):
+        cell = self.getCellById(id)
+        cell.troops = api.getTroops(id)
+        #handle adjacencies
+        adjacencies = api.getAdjacencies(id)
+        #remove ourselves from all current connections
+        for a in cell.cons:
+            if cell in a.cons:
+                a.cons.remove(cell)
+
+        cell.cons = []
+        for a in adjacencies:
+            a_cell = self.getCellById(a)
+            cell.cons.append(a_cell)
+            #add ourselves to other cell
+            if not cell in a_cell.cons:
+                a_cell.cons.append(cell)
+
+    #just update cell's troop amount info
+    def updateCellAmount(self, id, api):
+        cell = self.getCellById(id)
+        cell.troops = api.getTroops(id)
+
+

@@ -9,3 +9,4 @@ TEAM_RED = 2
 TEAM_GREEN = 3
 
 TEAMS = ["YELLOW", "BLUE", "RED", "GREEN"]
+colors = ["yellow", "blue", "red", "green", "grey"]
