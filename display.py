@@ -62,7 +62,10 @@ def printState(api, board):
 	print("Cells Controlled:")
 	for i in range(len(TEAMS)):
 		territories = api.getTeamTerritory(i)
-		print("  " + colored(TEAMS[i], colors[i]) + ": " + str(len(territories)) + " " * 3 + "\t", end="")
+		if territories == None:
+			print("  " + colored(TEAMS[i], colors[i]) + ": " + str(0) + " " * 3 + "\t", end="")
+		else:
+			print("  " + colored(TEAMS[i], colors[i]) + ": " + str(len(territories)) + " " * 3 + "\t", end="")
 
 	print("\nCards:")
 	for i in range(len(TEAMS)):
