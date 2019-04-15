@@ -1,5 +1,5 @@
 from troops import Troops
-from main import *
+from util import *
 
 #A cell on the board
 class Cell:
@@ -10,11 +10,11 @@ class Cell:
         self.y = y
         self.cons = connections
         #number of troops (only one team can occupy a space at a time)
-        self.troops = Troops(0, 0)
-    
+        self.troops = Troops(-1, 0)
+
     def connectCell(self, cell):
         self.cons.append(cell)
-    
+
     def unconnectCell(self, cell):
         self.cons = []
-    
+
