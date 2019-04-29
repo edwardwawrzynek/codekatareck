@@ -94,7 +94,7 @@ def moveTroops(api, board):
 		doAttack = False
 		for a in adjs:
 			#if owned by other, attack with all troops
-			if a.troops.getTeam() != api.teamColor and a.troops.getTeam() != -1:
+			if a.troops.getTeam() != api.teamColor and a.troops.getNumTroops() > 0:
 				api.move(cell.id, a.id, cell.troops.getNumTroops())
 				doAttack = True
 				break
@@ -139,13 +139,19 @@ def playCards(api, board):
 			num_insurgencies = int(max_cell.troops.getNumTroops() / 7) + 1
 			if api.getNumCards(api.teamColor) < 4 + 4*num_insurgencies:
 				return
-			#disconnect
-			if not api.disconnect(max_cell.id):
-				return
 			#inspire an incergency as many times as we need
 			for i in range(num_insurgencies):
 				if not api.inspireInsurgency(max_cell.id):
-					print("failed")
+					print("failed to inspire insurgency")
+
+			if api.getTroops(max_cell.id).getTeam() != -1:
+				print("failed to inspire insurgency")
+			else:
+				#disconnect
+				if not api.disconnect(max_cell.id):
+					return
+
+			board.updateCellCons(max_cell.id, api)
 
 
 

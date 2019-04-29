@@ -34,6 +34,7 @@ def handleLog(api, board):
 #print state of game
 def printState(api, board):
 	print("\033[%d;%dH" % (0, 0))
+
 	print("-" * (25*3))
 	#don't show connections, just squares and amounts
 	for y in range(25):
@@ -63,14 +64,14 @@ def printState(api, board):
 	for i in range(len(TEAMS)):
 		territories = api.getTeamTerritory(i)
 		if territories == None:
-			print("  " + colored(TEAMS[i], colors[i]) + ": " + str(0) + " " * 3 + "\t", end="")
+			print("  " + colored(TEAMS[i], colors[i]) + ": " + str(0).rjust(3, ' ') + " " * 4, end="")
 		else:
-			print("  " + colored(TEAMS[i], colors[i]) + ": " + str(len(territories)) + " " * 3 + "\t", end="")
+			print("  " + colored(TEAMS[i], colors[i]) + ": " + str(len(territories)).rjust(3, ' ') + " " * 4, end="")
 
 	print("\nCards:")
 	for i in range(len(TEAMS)):
 		cards = api.getNumCards(i)
-		print("  " + colored(TEAMS[i], colors[i]) + ": " + str(cards) + " " * 3 + "\t", end="")
+		print("  " + colored(TEAMS[i], colors[i]) + ": " + str(cards).rjust(3, ' ') + " " * 4, end="")
 
 	print()
 
