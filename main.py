@@ -44,6 +44,28 @@ def handleLog(api, board):
 		else:
 			print("unknown verb in action log: " + str(action))
 
+#find the square with minimum troops
+#if borders_only, only choose squares on the border
+def findMinCell(territories, borders_only, board, api):
+	min_a = 100000
+	minCell = 0
+	for t in territories:
+		t_troops = board.getCellById(t).troops.getNumTroops()
+		#only consider square if it has a bordering cell that we don't own (borders of boundry)
+		cons = board.getCellById(t).cons
+		is_border = False
+		for con in cons:
+			if con.troops.getTeam() != api.teamColor:
+				is_border = True
+		if t_troops < min_a and (is_border or (not borders_only)):
+			min_a = t_troops
+			minCell = board.getCellById(t)
+
+	if minCell != 0:
+		return minCell
+	else:
+		return None
+
 #choose spots to commit troops to
 def commitTroops(api, board):
 	if api.getCurTeam() != api.teamColor:
@@ -57,22 +79,23 @@ def commitTroops(api, board):
 
 	#find min, commit 1 troops to that, and repeat (slow but works)
 	while troops > 0:
-		min_a = 100000
-		minCell = 0
-		for t in territories:
-			t_troops = board.getCellById(t).troops.getNumTroops()
-			if t_troops < min_a:
-				min_a = t_troops
-				minCell = board.getCellById(t)
+		minCell = findMinCell(territories, True, board, api)
 
-		if minCell != 0:
+		if minCell != None:
 			commits[minCell.id] += 1
 			minCell.troops.setNumTroops(minCell.troops.getNumTroops() + 1)
 			troops -= 1
 		else:
-			print("Warning: couldn't find territory to cimmit to")
+			minCell = findMinCell(territories, False, board, api)
+			if minCell != None:
+				commits[minCell.id] += 1
+				minCell.troops.setNumTroops(minCell.troops.getNumTroops() + 1)
+				troops -= 1
+			else:
+				print("Warning: couldn't find territory to commit to")
+				break
 
-	#do the commits now (creates less to handle in logs)
+	#do the commits now (creates less to handle in logs, as successive commits to same square are combined)
 	for i in range(625):
 		if commits[i] == 0:
 			continue
@@ -152,10 +175,6 @@ def playCards(api, board):
 					return
 
 			board.updateCellCons(max_cell.id, api)
-
-
-
-
 
 #main game loop after we have choosen a corner
 def mainLoop(api, board, corner):

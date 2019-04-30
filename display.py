@@ -6,6 +6,7 @@ from util import *
 from board import Board
 import time
 from termcolor import colored, cprint
+import cursor
 
 #handle changes in log
 def handleLog(api, board):
@@ -30,6 +31,17 @@ def handleLog(api, board):
 			pass
 		else:
 			print("unknown verb in action log: " + str(action))
+
+#show animation to indicate displer hasn't locked up
+states = ['|', '/', '-', '\\']
+stateI = 0
+
+def printLoad():
+	global stateI
+	print("\n\nupdating " + states[stateI])
+	stateI+=1
+	stateI%=len(states)
+
 
 #print state of game
 def printState(api, board):
@@ -59,6 +71,8 @@ def printState(api, board):
 
 	team = api.getCurTeam()
 	print("Current Team: " + colored(TEAMS[team], colors[team]) + " " * 10)
+	print("\nTurn Number: " + str(sum("end" in line for line in api.getActionLog())))
+	print()
 
 	print("Cells Controlled:")
 	for i in range(len(TEAMS)):
@@ -73,13 +87,14 @@ def printState(api, board):
 		cards = api.getNumCards(i)
 		print("  " + colored(TEAMS[i], colors[i]) + ": " + str(cards).rjust(3, ' ') + " " * 4, end="")
 
-	print()
+	#Show that we are still running
+	printLoad()
 
 #update all cells (only on program start)
 def initState(api, board):
 	for i in range(625):
 		print("\033[%d;%dH" % (0, 0))
-		print("cell " + str(i) + " of 625")
+		print("loading cell " + str(i) + " of 625")
 		board.updateCellCons(i, api)
 
 	api.logIndex = len(api.getActionLog())
@@ -98,7 +113,8 @@ def main(team, password, url):
 	api = Api(url, password, team)
 	board = Board(25, 25)
 
-	print("Loading Initial Board State...")
+	cursor.hide()
+	print("\033[2J")
 	initState(api, board)
 
 	mainLoop(api, board)
